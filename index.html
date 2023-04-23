@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sheets API Quickstart</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="index.css"></link>
+  </head>
+  <body>
+    <p>Sheets API Quickstart</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    <div class="dropdown">
+      <select id="mySelect">
+        <option value="" disabled selected>Select a tab</option>
+        <option value="standings" onclick="addTeams()">Standings</option>
+        <option value="bracket" onclick="handleBracketToggle()">Bracket</option>
+        <option value="schedule" onclick="handleScheduleToggle()">Schedule</option>
+      </select>
+      <button onclick="getSelectedValue()">Go</button>
+    </div>
+    <div class="standings">
+      <div id="container">
+        <h1>Standings</h1>
+        <div class="row" id="header">
+          <div class="team">Team</div>
+          <div class="wins">W</div>
+          <div class="draws">L</div>
+          <div class="losses">D</div>
+          <div class="goals">GD</div>
+          <div class="points">Pts</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 1</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 2</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 3</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 4</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 5</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 6</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 7</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        <div class="row">
+            <div class="team">Team 8</div>
+            <div class="wins">0</div>
+            <div class="draws">0</div>
+            <div class="losses">0</div>
+            <div class="goals">0</div>
+            <div class="points">0</div>
+        </div>
+        </div>
+    </div>
+
+    <pre id="content" style="white-space: pre-wrap;"></pre>
+
+    <script src="scripts.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  </body>
+</html>
