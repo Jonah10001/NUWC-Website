@@ -1,3 +1,7 @@
+img {
+  width: 25vw;
+}
+
 .standings {
     display: flex;
     flex-direction: column;

@@ -1,6 +1,6 @@
 
-      const CLIENT_ID = '963405479682-edcomqe25ojugfn2qr0up9betajqqml2.apps.googleusercontent.com';
-      const API_KEY = 'AIzaSyDm4xMR-Y8ZQxJ7JA1t7RP_cKBfaGB7udw';
+      const CLIENT_ID = '19160401878-ugm2fgaqag0b5cmfe09l7ed6hvf7mt9l.apps.googleusercontent.com';
+      const API_KEY = 'AIzaSyDYyb_54-iu8gh829eP-hW-eZP8-o6Wy-w';
 
       // Discovery doc URL for APIs used by the quickstart
       const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
@@ -69,7 +69,7 @@
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
           // await listMajors();
-          await addTeams();
+          // await addTeams();
         };
 
         if (gapi.client.getToken() === null) {
@@ -96,13 +96,36 @@
         }
       }
 
+      async function access_range(requested) {
+        let response;
+        try {
+          // Fetch team data
+          response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1XbpHC_l5L75ujJ5U1Ygj0H30L-tu3FUFiVEQlJ86e6o',
+            range: requested,
+          });
+        } catch (err) {
+          console.error(err);
+          return;
+        }
+        const range = response.result;
+        if (!range || !range.values || range.values.length === 0) {
+          console.error('No values found.');
+          return;
+        }
+      
+        const teamData = range.values;
+        console.log("team data: " + teamData);
+        return teamData;
+      }
+
       async function listMajors() {
         let response;
         try {
           // Fetch first 10 files
           response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: '1XbpHC_l5L75ujJ5U1Ygj0H30L-tu3FUFiVEQlJ86e6o',
-            range: 'Standings!A2:E',
+            range: 'Group A!A2:E',
           });
         } catch (err) {
           document.getElementById('content').innerText = err.message;
@@ -120,42 +143,85 @@
       }
 
       async function addTeams() {
-        let response;
-        try {
-          // Fetch team data
-          response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1XbpHC_l5L75ujJ5U1Ygj0H30L-tu3FUFiVEQlJ86e6o',
-            range: 'Standings!A2:F',
-          });
-        } catch (err) {
-          console.error(err);
-          return;
-        }
-        const range = response.result;
-        if (!range || !range.values || range.values.length === 0) {
-          console.error('No values found.');
-          return;
-        }
-      
-        const teamData = range.values;
+        let html = `<h1>Standings</h1>`;
         const container = document.getElementById('container');
+        let teamData;
+        let color;
+        let thirdPlace = [];
 
+        const arr = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-        var html = `<h1>Standings</h1>
-        <div class="row" id="header">
-          <div class="team">Team</div>
-          <div class="wins">W</div>
-          <div class="losses">L</div>
-          <div class="draws">D</div>
-          <div class="goals">GD</div>
-          <div class="points">Pts</div>
-        </div>`;
+        for (element of arr) {
+          html += `<h2>Group ${element}</h2>
+          <div class="row" id="header">
+            <div class="team">Team</div>
+            <div class="wins">W</div>
+            <div class="losses">L</div>
+            <div class="draws">D</div>
+            <div class="goals">GD</div>
+            <div class="points">Pts</div>
+          </div>`;
+          teamData = await access_range(`Group ${element}!A2:F`);
+          console.log("post return team data: " + teamData);
 
-        for (let i = 0; i<= teamData.length - 1; i++) {
-          const arr = teamData[i];
-          // console.log(arr);
+          teamData.sort(function(a, b) {
+            if (a[5] !== b[5]) {
+              return b[5] - a[5];
+            } else {
+              return b[4] - a[4];
+            }
+          });
+
+          for (let i = 0; i <= teamData.length - 1; i++) {
+            const arr = teamData[i];
+            if (i == 0 || i == 1) {
+              color = "#BBF3BB";
+            } else if (i == 2){
+              color = "#BBF3FF";
+              thirdPlace.push(arr);
+            }
+            else {
+              color = "#EAECF0";
+            }
+            html += `
+            <div class="row" style="background-color: ${color};">
+              <div class="team">${arr[0]}</div>
+              <div class="wins">${arr[1]}</div>
+              <div class="losses">${arr[2]}</div>
+              <div class="draws">${arr[3]}</div>
+              <div class="goals">${arr[4]}</div>
+              <div class="points">${arr[5]}</div>
+          </div>
+            `;
+        }
+      }
+      html += `<h2>Third Place Teams</h2>
+      <div class="row" id="header">
+        <div class="team">Team</div>
+        <div class="wins">W</div>
+        <div class="losses">L</div>
+        <div class="draws">D</div>
+        <div class="goals">GD</div>
+        <div class="points">Pts</div>
+      </div>`;
+
+        thirdPlace.sort(function(a, b) {
+          if (a[5] !== b[5]) {
+            return b[5] - a[5];
+          } else {
+            return b[4] - a[4];
+          }
+        });
+
+        for (let i = 0; i <= thirdPlace.length - 1; i++) {
+          const arr = thirdPlace[i];
+          if (i < 4) {
+            color = "#BBF3BB";
+          } else {
+            color = "#EAECF0";
+          }
           html += `
-          <div class="row">
+          <div class="row" style="background-color: ${color};">
             <div class="team">${arr[0]}</div>
             <div class="wins">${arr[1]}</div>
             <div class="losses">${arr[2]}</div>
@@ -163,14 +229,12 @@
             <div class="goals">${arr[4]}</div>
             <div class="points">${arr[5]}</div>
         </div>
-          `
-        }
+          `;
+      }
 
-        console.log(html);
-
-        container.innerHTML = html;
-
-        }
+    console.log(html);
+    container.innerHTML = html;
+}
 
         function getSelectedValue() {
 			const dropdown = document.getElementById("mySelect");
@@ -191,7 +255,7 @@
           // Fetch team data
           response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: '1XbpHC_l5L75ujJ5U1Ygj0H30L-tu3FUFiVEQlJ86e6o',
-            range: 'Schedule!A2:D',
+            range: 'Schedule!A2:G',
           });
         } catch (err) {
           console.error(err);
@@ -207,14 +271,17 @@
         const container = document.getElementById('container');
 
 
-            var html = `<h1>Soccer Tournament Schedule</h1>
+            var html = `<h1>Group Stage Match Schedule</h1>
             <table>
               <thead>
                 <tr>
                   <th>Match</th>
-                  <th>Date</th>
+                  <th>Home Team</th>
+                  <th>Away Team</th>
                   <th>Time</th>
                   <th>Location</th>
+                  <th>Home Score</th>
+                  <th>Away Score</th>
                 </tr>
               </thead>
               <tbody>`;
@@ -227,6 +294,9 @@
                         <td>${arr[1]}</td>
                         <td>${arr[2]}</td>
                         <td>${arr[3]}</td>
+                        <td>${arr[4]}</td>
+                        <td>${arr[5]}</td>
+                        <td>${arr[6]}</td>
                       </tr>`;
               }
 
